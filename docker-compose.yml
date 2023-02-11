@@ -1,0 +1,23 @@
+version: "3.7"
+
+services:
+
+  sheazuzu:
+    container_name: "sheazuzu"
+    build:
+      context: ./sheazuzu
+      dockerfile: Dockerfile
+    environment:
+      - mysql_host=${MYSQL_HOST:-}
+      - mysql_port=${MYSQL_PORT:-}
+      - mysql_database_name=${MYSQL_DATABASE:-sheazuzu}
+      - mysql_username=${MYSQL_USERNAME:-root}
+      - mysql_password=${MYSQL_PASSWORD:-123456}
+    labels:
+      - traefik.http.routers.sheazuzu.rule=Host(`sheazuzu.${DOCKER_HOST:-localhost}`)
+
+
+networks:
+  default:
+    name: "traefik"
+    external: true

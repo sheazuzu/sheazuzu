@@ -1,0 +1,185 @@
+openapi: 3.0.1
+info:
+  title: Sheazuzu Service
+  version: '1.0'
+  description: 'This API describes private project from sheazuzu.'
+  contact:
+    name: Zhenyu Xie
+    email: sheazuzu@hotmail.com
+servers:
+  - url: /
+paths:
+  /find/machines:
+    description: retrieve all match data set from database
+    get:
+      tags:
+        - electric machines
+      operationId: allMatchDataUsingGET
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/MatchDataSetResponse'
+        '400':
+          description: In case of a BadRequestError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: In case of a InternalError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      description: |
+        Returns a list of all electric machines from datebase.
+  /find/data:
+    description: retrieve data by id from database
+    get:
+      tags:
+        - data
+      operationId: getMatchDataByIdUsingGET
+      responses:
+        '200':
+          description: 'OK'
+          content:
+            application/json;charset=UTF-8:
+              schema:
+                $ref: '#/components/schemas/MatchDataResponse'
+        '400':
+          description: In case of a BadRequestError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: In case of a InternalError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+      parameters:
+        - name: id
+          in: query
+          required: true
+          description: |
+            Id of the electric machine
+          schema:
+            type: integer
+      description: |
+        Returns electric machine from datebase for given parameter.
+
+  /upload:
+    description: upload new data
+    post:
+      tags:
+        - tool
+      summary: upload new data
+      operationId: uploadUsingPOST
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              properties:
+                fileName:
+                  type: string
+                  format: binary
+      responses:
+        200:
+          description: 'OK'
+          content:
+            application/pdf:
+              schema:
+                type: string
+                format: binary
+        '400':
+          description: In case of a BadRequestError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+        '500':
+          description: In case of a InternalError
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ErrorResponse'
+components:
+  schemas:
+    MatchDataResponse:
+      type: object
+      properties:
+        MatchData:
+          $ref: '#/components/schemas/MatchData'
+    MatchDataSetResponse:
+      type: object
+      properties:
+        MatchDataSet:
+          type: array
+          items:
+            $ref: '#/components/schemas/MatchData'
+    MatchData:
+      type: object
+      description: match data
+      properties:
+        id:
+          type: integer
+        date:
+          type: string
+
+        home_team:
+          type: string
+        away_team:
+          type: string
+        match_type:
+          type: string
+        result:
+          type: string
+        additional_informations:
+          $ref: '#/components/schemas/AdditionalInformation'
+    AdditionalInformation:
+      type: object
+      properties:
+        additional:
+          type: string
+        information:
+          type: string
+
+    ErrorResponse:
+      type: object
+      properties:
+        code:
+          type: integer
+          format: int32
+        description:
+          type: string
+        details:
+          type: array
+          items:
+            type: string
+        message:
+          type: string
+        name:
+          type: string
+
+  examples: {}
+  requestBodies: {}
+  headers: {}
+  securitySchemes:
+    basic:
+      description: |
+        HTTP Basic Authentication.
+      type: http
+      scheme: basic
+    ApiKeyAuth:
+      description: |
+        API-Key Authentication.
+      type: apiKey
+      in: header
+      name: x-api-key
+  links: {}
+  callbacks: {}

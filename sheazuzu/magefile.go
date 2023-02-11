@@ -19,8 +19,11 @@ func init() {
 }
 
 func Prepare() error {
-	//	return build.PrepareVersion(VERSION, build.GetAPIDir(MODULE)+"/swagger.yaml", build.GetTargetDir(MODULE)+"/swagger-viso.yaml")
-	return nil
+	return build.PrepareVersion(VERSION, build.GetAPIDir(MODULE)+"/swagger.yaml", build.GetTargetDir(MODULE)+"/swagger-sheazuzu.yaml")
+}
+
+func GenerateServer() error {
+	return build.GenerateSwaggerServer(build.GetTargetDir(MODULE)+"/swagger-sheazuzu.yaml", "sheazuzu", build.GetGeneratedDir(MODULE)+"/sheazuzu")
 }
 
 func Build() error {

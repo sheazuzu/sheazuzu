@@ -46,18 +46,22 @@ func Prepare() {
 	mg.Deps(sheazuzu.Prepare)
 }
 
+func Generate() {
+	Prepare()
+	mg.Deps(sheazuzu.GenerateServer)
+}
+
 func Test() {
 	mg.Deps(sheazuzu.Test)
 }
 
 func Build() {
+	Generate()
 	mg.Deps(sheazuzu.Build)
 }
 
 func Run() error {
-	//cmd := exec.Command("docker-compose", "up", "-d", "--build")
-
-	cmd := exec.Command(".//sheazuzu/target/sheazuzu-darwin-amd64")
+	cmd := exec.Command("docker-compose", "up", "-d", "--build")
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
