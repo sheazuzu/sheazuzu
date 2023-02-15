@@ -6,4 +6,4 @@ target/
 .localstack
 .env
 .redis/
-.Dockerfile_perf
+Dockerfile_perf

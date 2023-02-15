@@ -11,7 +11,6 @@ ENV mysql_password ""
 EXPOSE 8080
 
 ENTRYPOINT /sheazuzu-linux-amd64 \
-    --server.port=9993 \
     --database.endpoint=$mysql_host \
     --database.username=$mysql_username \
     --database.password=$mysql_password \

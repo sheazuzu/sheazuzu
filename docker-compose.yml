@@ -6,7 +6,7 @@ services:
     container_name: "sheazuzu"
     build:
       context: sheazuzu
-      dockerfile: ${DOCKERFILE:-Dockerfile}
+      dockerfile: "${DOCKERFILE:-Dockerfile}"
     environment:
       - mysql_host=${MYSQL_HOST:-}
       - mysql_port=${MYSQL_PORT:-}
