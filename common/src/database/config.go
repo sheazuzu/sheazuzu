@@ -29,10 +29,36 @@ func (config *Config) GetDatabaseConn() string {
 
 func BindConfig(config *Config, fs *flag.FlagSet) {
 	fs.StringVar(&config.Endpoint, "database.endpoint", "localhost", "database endpoint")
-	fs.IntVar(&config.Port, "database.port", 8080, "database port")
-	fs.StringVar(&config.DatabaseName, "database.name", "sheazuzu", "database endpoint")
+	fs.IntVar(&config.Port, "database.port", 3306, "database port")
+	fs.StringVar(&config.DatabaseName, "database.name", "", "database endpoint")
 	fs.StringVar(&config.Config, "database.config", "parseTime=true", "database endpoint")
-	fs.StringVar(&config.UserName, "database.username", "root", "database username")
-	fs.StringVar(&config.Password, "database.password", "password", "database password")
+	fs.StringVar(&config.UserName, "database.username", "", "database username")
+	fs.StringVar(&config.Password, "database.password", "", "database password")
 
+}
+
+// IsValid checks if the config properties URI, Database and SSLClientCertFile (in case of UseSSL=true) are set.
+func (config *Config) IsValid() bool {
+
+	if config.Endpoint == "" {
+		fmt.Println("please specify a database endpoint")
+		return false
+	}
+
+	if config.DatabaseName == "" {
+		fmt.Println("please specify a mysql database name")
+		return false
+	}
+
+	if config.UserName == "" {
+		fmt.Println("please specify a username")
+		return false
+	}
+
+	if config.Password == "" {
+		fmt.Println("please specify a password")
+		return false
+	}
+
+	return true
 }

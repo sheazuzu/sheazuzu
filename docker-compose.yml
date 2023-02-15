@@ -1,12 +1,12 @@
-version: "3.7"
+version: "3.8"
 
 services:
 
   sheazuzu:
     container_name: "sheazuzu"
     build:
-      context: ./sheazuzu
-      dockerfile: Dockerfile
+      context: sheazuzu
+      dockerfile: ${DOCKERFILE:-Dockerfile}
     environment:
       - mysql_host=${MYSQL_HOST:-}
       - mysql_port=${MYSQL_PORT:-}

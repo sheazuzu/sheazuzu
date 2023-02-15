@@ -12,7 +12,7 @@ import (
 	"sheazuzu/common/src/logging"
 	"sheazuzu/common/src/metrics"
 	"sheazuzu/common/src/swagger"
-	"sheazuzu/common/tracing"
+	"sheazuzu/common/src/tracing"
 	"sheazuzu/sheazuzu/src/configuration"
 	"sheazuzu/sheazuzu/src/controller"
 	"sheazuzu/sheazuzu/src/database"

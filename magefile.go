@@ -51,10 +51,6 @@ func Generate() {
 	mg.Deps(sheazuzu.GenerateServer)
 }
 
-func Test() {
-	mg.Deps(sheazuzu.Test)
-}
-
 func Build() {
 	Generate()
 	mg.Deps(sheazuzu.Build)
@@ -65,4 +61,8 @@ func Run() error {
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	return cmd.Run()
+}
+
+func Test() {
+	mg.Deps(sheazuzu.Test)
 }
