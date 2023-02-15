@@ -9,11 +9,11 @@ info:
 servers:
   - url: /
 paths:
-  /find/machines:
+  /find/allData:
     description: retrieve all match data set from database
     get:
       tags:
-        - electric machines
+        - match data
       operationId: allMatchDataUsingGET
       responses:
         '200':
@@ -35,12 +35,12 @@ paths:
               schema:
                 $ref: '#/components/schemas/ErrorResponse'
       description: |
-        Returns a list of all electric machines from datebase.
+        Returns a list of all match data from datebase.
   /find/data:
     description: retrieve data by id from database
     get:
       tags:
-        - data
+        - match data
       operationId: getMatchDataByIdUsingGET
       responses:
         '200':
@@ -76,7 +76,7 @@ paths:
     description: upload new data
     post:
       tags:
-        - tool
+        - match data
       summary: upload new data
       operationId: uploadMatchDataUsingPOST
       requestBody:

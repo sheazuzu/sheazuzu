@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"fmt"
 	"github.com/go-chi/chi"
 	"go.uber.org/zap"
@@ -11,6 +12,7 @@ import (
 	verrors "sheazuzu/common/src/errors"
 	"sheazuzu/common/src/logging"
 	"sheazuzu/common/src/metrics"
+	"sheazuzu/common/src/mongo"
 	"sheazuzu/common/src/swagger"
 	"sheazuzu/common/src/tracing"
 	"sheazuzu/sheazuzu/src/configuration"
@@ -52,11 +54,32 @@ func Run(cfg *configuration.Configuration) func(cmd *cli.Command, args ...string
 
 		handleSigterm(logger)
 
+		// setup MySQL connection
 		db := database.InitDB(cfg.Database.GetDatabaseConn())
 		db.LogMode(true) //gorm log model
 		defer db.Close()
 
-		sheazuzuRepo := repository.ProvideSheazuzuRepository(db, logger)
+		var mongoRepository *database.MongoDatabase
+		if cfg.Mongo.URI != "" {
+			// connect to MongoDB client
+			mongoDatabase, err := mongo.NewMongoDatabase(&cfg.Mongo, logger)
+			if err != nil {
+				logger.Error("error creating MongoDB client", "error", err)
+				os.Exit(1)
+				return
+			}
+
+			err = mongoDatabase.Connect(context.Background())
+			if err != nil {
+				logger.Error("error connecting to MongoDB", "error", err)
+				os.Exit(1)
+				return
+			}
+
+			mongoRepository = database.NewMongoDatabase(mongoDatabase)
+		}
+
+		sheazuzuRepo := repository.ProvideSheazuzuRepository(db, mongoRepository, logger)
 		sheazuzuSerivce := service.ProvideSheazuzuService(sheazuzuRepo, logger)
 		sheazuzuApi := controller.ProvideSheazuzuAPI(sheazuzuSerivce, logger)
 
