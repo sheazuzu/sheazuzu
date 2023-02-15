@@ -1,14 +1,14 @@
 /*
- * config_test.go
- * Created on 23.10.2019
- * Copyright (C) 2019 Volkswagen AG, All rights reserved
- *
+ *  config_test.go
+ *  Created on 22.02.2021
+ *  Copyright (C) 2021 Volkswagen AG, All rights reserved.
  */
 
 package logging
 
 import (
 	"flag"
+	"fmt"
 	"testing"
 
 	"github.com/stretchr/testify/assert"
@@ -173,4 +173,33 @@ func TestConfig_IsValid(t *testing.T) {
 			assert.Equal(t, tc.output.isValid, result)
 		})
 	}
+}
+
+func ExampleConfig_IsValid_valid() {
+	cfg := Config{
+		Level:  "info",
+		Format: "console",
+	}
+	fmt.Println(cfg.IsValid())
+	// Output: true
+}
+
+func ExampleConfig_IsValid_invalidFormat() {
+	cfg := Config{
+		Level:  "info",
+		Format: "thisformatdoesnotexist",
+	}
+	fmt.Println(cfg.IsValid())
+	// Output: log format must either be 'json' 'console', or 'minimal'
+	//false
+}
+
+func ExampleConfig_IsValid_invalidLevel() {
+	cfg := Config{
+		Level:  "everything",
+		Format: "console",
+	}
+	fmt.Println(cfg.IsValid())
+	// Output: log level must either be 'info', 'debug', 'warn' or 'error'
+	//false
 }

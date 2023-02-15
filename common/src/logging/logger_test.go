@@ -1,8 +1,7 @@
 /*
- * logger_test.go
- * Created on 23.10.2019
- * Copyright (C) 2019 Volkswagen AG, All rights reserved
- *
+ *  logger_test.go
+ *  Created on 22.02.2021
+ *  Copyright (C) 2021 Volkswagen AG, All rights reserved.
  */
 
 package logging
@@ -69,13 +68,32 @@ func TestInitLogger(t *testing.T) {
 	}
 }
 
-func TestLoggerHandler(t *testing.T) {
+func TestRequestLogHandler(t *testing.T) {
 	t.Parallel()
 
 	logger := GetLogger("error", "json")
 	var handler http.Handler
-	handler = Logger(logger)(http.NotFoundHandler())
+	handler = RequestLogHandler(logger)(http.NotFoundHandler())
 	handler.ServeHTTP(httptest.NewRecorder(), httptest.NewRequest("GET", "/", nil))
 
 	assert.NotNil(t, handler)
+}
+
+func TestRecoverPanic(t *testing.T) {
+
+	logger := GetLogger("debug", "minimal")
+
+	defer RecoverPanic(logger)
+
+	exitCalled := false
+
+	exitFn = func(code int) {
+		assert.Equal(t, 1, code)
+		exitCalled = true
+	}
+
+	panic("Don't Panic")
+
+	//goland:noinspection GoUnreachableCode
+	assert.True(t, exitCalled)
 }

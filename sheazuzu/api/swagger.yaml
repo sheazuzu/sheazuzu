@@ -78,24 +78,19 @@ paths:
       tags:
         - tool
       summary: upload new data
-      operationId: uploadUsingPOST
+      operationId: uploadMatchDataUsingPOST
       requestBody:
         content:
-          multipart/form-data:
+          application/json:
             schema:
-              type: object
-              properties:
-                fileName:
-                  type: string
-                  format: binary
+              $ref: '#/components/schemas/MatchData'
       responses:
         200:
           description: 'OK'
           content:
-            application/pdf:
+            application/json:
               schema:
-                type: string
-                format: binary
+                $ref: '#/components/schemas/UpdateResponse'
         '400':
           description: In case of a BadRequestError
           content:
@@ -122,6 +117,13 @@ components:
           type: array
           items:
             $ref: '#/components/schemas/MatchData'
+    UpdateResponse:
+      type: object
+      properties:
+        Message:
+          type: string
+        MatchID:
+          type: integer
     MatchData:
       type: object
       description: match data
@@ -130,7 +132,6 @@ components:
           type: integer
         date:
           type: string
-
         home_team:
           type: string
         away_team:

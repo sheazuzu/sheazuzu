@@ -10,6 +10,7 @@ import (
 
 type sheazuzuRepository interface {
 	FindMatchDataByIdInDB(int) (entity.MatchData, error)
+	UpdateMatchDataInDB(data entity.MatchData) (string, int, error)
 }
 
 type Service struct {
@@ -25,7 +26,7 @@ func ProvideSheazuzuService(sheazuzuRepository sheazuzuRepository, logger *zap.S
 }
 
 func (service *Service) FindMatchDataById(id int) (sheazuzu.MatchData, error) {
-	op := verrors.Op("service: Find EM by id")
+	op := verrors.Op("service: Find MatchData by id")
 
 	data, err := service.atbRepository.FindMatchDataByIdInDB(id)
 	if err != nil {
@@ -33,4 +34,14 @@ func (service *Service) FindMatchDataById(id int) (sheazuzu.MatchData, error) {
 	}
 
 	return mapper.MatchDataToBo(data), nil
+}
+
+func (service *Service) UpdateMatchData(data sheazuzu.MatchData) (string, int, error) {
+	op := verrors.Op("service: Update MatchData")
+
+	msg, id, err := service.atbRepository.UpdateMatchDataInDB(mapper.BoToMatchData(data))
+	if err != nil {
+		return "", 0, verrors.E(op, err)
+	}
+	return msg, id, nil
 }

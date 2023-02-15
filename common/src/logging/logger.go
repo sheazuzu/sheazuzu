@@ -1,14 +1,17 @@
 /*
- * logger.go
- * Created on 23.10.2019
- * Copyright (C) 2019 Volkswagen AG, All rights reserved
- *
+ *  logger.go
+ *  Created on 22.02.2021
+ *  Copyright (C) 2021 Volkswagen AG, All rights reserved.
  */
 
+// Package logging provides constants and functions for a consistent logger configuration within the NGW application landscape.
 package logging
 
 import (
 	"net/http"
+	"os"
+	"runtime/debug"
+	"sheazuzu/common/src/tracing"
 	"strings"
 	"time"
 
@@ -16,7 +19,9 @@ import (
 	"go.uber.org/zap/zapcore"
 )
 
-// GetLogger returns a new logger
+// GetLogger returns a new logger. The parameter level defines which messages will be logged. Possible are "info", "debug", "warn" or "error".
+// The parameter format is used to select an encoding and build the encoder config. Valid values for format are "minimal", "json" or "console".
+// A format = minimal e.g. prevents stacktraces from being logged.
 func GetLogger(level, format string) *zap.SugaredLogger {
 
 	loggerCfg := zap.NewProductionConfig()
@@ -68,10 +73,19 @@ func GetLogger(level, format string) *zap.SugaredLogger {
 	return logger.Sugar()
 }
 
-// Logger returns a middleware that logs incoming http calls and their duration
-func Logger(logger *zap.SugaredLogger) func(http.Handler) http.Handler {
+// RequestLogHandler returns a middleware that logs incoming http calls and their duration
+// It also adds the traceId to the logging context, but make sure the `tracing.TraceHandler` middleware is in the chain before this handler
+func RequestLogHandler(logger *zap.SugaredLogger) func(http.Handler) http.Handler {
 	return func(inner http.Handler) http.Handler {
 		return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+
+			ctx := WithLogger(r.Context(), logger)
+			defer RecoverPanic(logger)
+
+			// add the traceid to the logger
+			logger := tracing.LoggerWithTraceID(ctx, logger)
+			r = r.WithContext(ctx)
+
 			start := time.Now()
 
 			inner.ServeHTTP(w, r)
@@ -83,5 +97,15 @@ func Logger(logger *zap.SugaredLogger) func(http.Handler) http.Handler {
 				time.Since(start),
 			)
 		})
+	}
+}
+
+var exitFn = os.Exit
+
+// RecoverPanic logs the panic which occurred in a goroutine and exits the routine.
+func RecoverPanic(logger *zap.SugaredLogger) {
+	if r := recover(); r != nil {
+		logger.Errorf("Panic: %v,\n%s", r, debug.Stack())
+		exitFn(1)
 	}
 }

@@ -22,7 +22,19 @@ func (repository *SheazuzuRepository) FindMatchDataByIdInDB(id int) (entity.Matc
 
 	var data entity.MatchData
 
-	repository.DB.Preload("AdditionalInformation").Where("id = ?", id).Find(&data)
+	db := repository.DB.Preload("AdditionalInformation").Where("id = ?", id).Find(&data)
+	if db.Error != nil {
+		return entity.MatchData{}, db.Error
+	}
 
 	return data, nil
+}
+
+func (repository *SheazuzuRepository) UpdateMatchDataInDB(data entity.MatchData) (string, int, error) {
+
+	db := repository.DB.Create(&data)
+	if db.Error != nil {
+		return "failed", 0, db.Error
+	}
+	return "successful!", data.Id, nil
 }

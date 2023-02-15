@@ -1,8 +1,7 @@
 /*
- * config.go
- * Created on 23.10.2019
- * Copyright (C) 2019 Volkswagen AG, All rights reserved
- *
+ *  config.go
+ *  Created on 22.02.2021
+ *  Copyright (C) 2021 Volkswagen AG, All rights reserved.
  */
 
 package tracing
@@ -13,6 +12,7 @@ import (
 	"net/url"
 )
 
+// Config contains values needed for the configuration of the tracing.
 type Config struct {
 	Enabled      bool
 	ServiceName  string
@@ -20,6 +20,7 @@ type Config struct {
 	CollectorURI string
 }
 
+// IsValid returns true if AgentURI and CollectorURI are given and the CollectorURI is a valid URL.
 func (cfg *Config) IsValid() bool {
 
 	if !cfg.Enabled {
@@ -44,6 +45,7 @@ func (cfg *Config) IsValid() bool {
 	return !hasErrors
 }
 
+// BindConfig takes a Config and a FlagSet and stores the tracing-relevant flags in the corresponding config fields.
 func BindConfig(config *Config, fs *flag.FlagSet, defaultName string) {
 	fs.BoolVar(&config.Enabled, "tracing.enabled", false, "enables tracing")
 	fs.StringVar(&config.ServiceName, "tracing.serviceName", defaultName, "the service name used for tracing")

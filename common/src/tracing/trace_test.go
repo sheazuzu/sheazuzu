@@ -1,8 +1,7 @@
 /*
- * trace_test.go
- * Created on 23.10.2019
- * Copyright (C) 2019 Volkswagen AG, All rights reserved
- *
+ *  trace_test.go
+ *  Created on 22.02.2021
+ *  Copyright (C) 2021 Volkswagen AG, All rights reserved.
  */
 
 package tracing
@@ -168,10 +167,10 @@ func TestTraceHandler(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			finalHandler := TraceHandler(zap.NewNop().Sugar(), "test")(http.HandlerFunc(getHandler(tc.input.status)))
+			finalHandler := TraceHandler(zap.NewNop().Sugar(), "test")(getHandler(tc.input.status))
 
 			recorder := httptest.NewRecorder()
-			request := httptest.NewRequest("GET", "http://localhost:8080/irrelevantUrl", ioutil.NopCloser(bytes.NewBufferString("test")))
+			request := httptest.NewRequest("GET", "http://localhost:8080/irrelevantUrl?tenant=ihdcc-vw-de-de", ioutil.NopCloser(bytes.NewBufferString("test")))
 
 			finalHandler.ServeHTTP(recorder, request)
 
@@ -213,9 +212,24 @@ func TestAddStatus(t *testing.T) {
 		t.Run(name, func(t *testing.T) {
 			t.Parallel()
 
-			span := &trace.Span{}
+			_, span := trace.StartSpan(context.Background(), "test")
 
 			AddStatus(span, tc.input.err, tc.input.status)
 		})
 	}
+}
+
+func ExampleTraceId() {
+	ctx, span := StartSpan(context.Background(), "mytestspan")
+	ctx = AddTraceIdToContext(ctx, span)
+	traceId := TraceId(ctx)
+	fmt.Println(span.SpanContext().TraceID.String() == traceId)
+	// Output: true
+}
+
+func ExampleSpanFromContext() {
+	ctx, span := StartSpan(context.Background(), "mytestspan")
+	spanFromCtx := SpanFromContext(ctx)
+	fmt.Println(span == spanFromCtx)
+	// Output: true
 }

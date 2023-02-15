@@ -63,7 +63,7 @@ func Run(cfg *configuration.Configuration) func(cmd *cli.Command, args ...string
 		serverWithMiddleware := sheazuzu.NewServerWithMiddleware(sheazuzuApi)
 		serverWithMiddleware.GetMatchDataByIdUsingGETMiddlewares = getMiddleWareChain("machineByIdUsingGET", logger)
 		serverWithMiddleware.AllMatchDataUsingGETMiddlewares = getMiddleWareChain("allMachinesUsingGET", logger)
-		serverWithMiddleware.UploadUsingPOSTMiddlewares = getMiddleWareChain("machineByRatedSpeedUsingGET", logger)
+		serverWithMiddleware.UploadMatchDataUsingPOSTMiddlewares = getMiddleWareChain("uploadMatchDataUsingPOST", logger)
 
 		contextPath := cfg.Server.GetContextPath()
 
